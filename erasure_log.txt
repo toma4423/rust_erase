@@ -1,0 +1,24 @@
+[1728015640.21291222s] ACTION: Starting erase for /dev/sr0 - 1024M - HDD - ATA
+RESULT: In Progress
+DETAILS: Initiating disk erasure process.
+
+[1728015640.212994715s] ACTION: DoD5220.22-M wipe started on: /dev/sr0
+RESULT: In Progress
+DETAILS: Random data and zeros will be written in multiple passes.
+
+[1728015645.301582519s] ACTION: Device Size
+RESULT: Failed
+DETAILS: Failed to determine the size of the device: /dev/sr0
+
+[1728015645.302072311s] ACTION: Erase failed for /dev/sr0 - 1024M - HDD - ATA
+RESULT: Error
+DETAILS: Failed to determine the size of the device: /dev/sr0
+
+[1728015645.302181465s] ACTION: Erasure process
+RESULT: Complete
+DETAILS: Disk erasure process completed for all selected disks.
+
+[1728015645.302529268s] ACTION: Errors encountered during erasure
+RESULT: Error
+DETAILS: ["Failed to determine the size of the device: /dev/sr0"]
+

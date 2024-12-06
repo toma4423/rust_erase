@@ -1,0 +1,13 @@
+[package]
+name = "rust_erase"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+crossterm = "0.28.1"
+indicatif = "0.16"
+rayon = "1.10"
+
+[dev-dependencies]
+assert_cmd = "2.0"
+
