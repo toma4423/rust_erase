@@ -1,2 +1,3 @@
-test
+これなんだ？
+
 # rust_erase
