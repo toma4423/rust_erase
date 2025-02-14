@@ -1,6 +1,6 @@
 # rust_erase
 
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://example.com)
+<!-- [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://example.com) -->
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 `rust_erase` は、Linux環境で動作するディスク消去ユーティリティです。DoD 5220.22-M方式 (HDD) および Secure Erase (SSD) を使用して、ディスクのデータを安全かつ完全に消去します。
