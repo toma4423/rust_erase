@@ -1,5 +1,5 @@
-use std::process::Command; // Commandをインポート
-use std::io::{self, BufRead};  // BufReadトレイトをインポート
+use std::io::{self, BufRead};
+use std::process::Command; // Commandをインポート // BufReadトレイトをインポート
 
 /// ディスクを選択する関数
 pub fn select_disk() -> Option<String> {
@@ -61,7 +61,10 @@ fn get_available_disks() -> Vec<String> {
 
                 let disk_info = format!(
                     "/dev/{} - {} - {} - {}",
-                    disk_name, model, device_type, transport.to_uppercase()
+                    disk_name,
+                    model,
+                    device_type,
+                    transport.to_uppercase()
                 );
                 disks.push(disk_info);
             }
@@ -126,7 +129,9 @@ fn prompt_user_for_device_type(model: &str, input: &mut dyn std::io::Read) -> St
     );
 
     let mut input_str = String::new();
-    std::io::BufReader::new(input).read_line(&mut input_str).expect("Failed to read input");
+    std::io::BufReader::new(input)
+        .read_line(&mut input_str)
+        .expect("Failed to read input");
 
     match input_str.trim() {
         "h" | "H" => "HDD".to_string(),

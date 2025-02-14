@@ -15,7 +15,11 @@ pub fn show() {
         "" => {
             println!("Shutting down the system...");
             // システムシャットダウン処理を実行
-            if let Err(e) = std::process::Command::new("sudo").arg("shutdown").arg("now").status() {
+            if let Err(e) = std::process::Command::new("sudo")
+                .arg("shutdown")
+                .arg("now")
+                .status()
+            {
                 eprintln!("Failed to shut down the system: {}", e);
             }
         }

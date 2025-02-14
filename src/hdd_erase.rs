@@ -21,9 +21,11 @@ pub fn erase_hdd_with_dod5220(device: &str) -> Result<(), String> {
 
         // プログレスバーの設定
         let bar = ProgressBar::new(100); // プログレスバーのステップ数を100に設定
-        bar.set_style(ProgressStyle::default_bar()
-            .template("{bar:40.cyan/blue} {pos:>7}/{len:7} ({percent}%)")
-            .progress_chars("=>-"));
+        bar.set_style(
+            ProgressStyle::default_bar()
+                .template("{bar:40.cyan/blue} {pos:>7}/{len:7} ({percent}%)")
+                .progress_chars("=>-"),
+        );
 
         // 進行状況のシミュレーション（実際の消去処理と置き換え）
         for _ in 0..100 {
@@ -137,9 +139,11 @@ mod tests {
             println!("{}", action);
 
             let bar = ProgressBar::new(100);
-            bar.set_style(ProgressStyle::default_bar()
-                .template("{bar:40.cyan/blue} {pos:>7}/{len:7} ({percent}%)")
-                .progress_chars("=>-"));
+            bar.set_style(
+                ProgressStyle::default_bar()
+                    .template("{bar:40.cyan/blue} {pos:>7}/{len:7} ({percent}%)")
+                    .progress_chars("=>-"),
+            );
 
             for _ in 0..100 {
                 bar.inc(1);

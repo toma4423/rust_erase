@@ -1,0 +1,30 @@
+# ターゲットディレクトリ (コンパイルされたバイナリ、ライブラリ、依存関係など)
+/target/
+
+# エディタやIDEが生成するファイル
+.idea/
+.vscode/
+*.swp
+*~
+*.bak
+
+# OSが生成するファイル
+Thumbs.db
+.DS_Store
+
+# Rustコンパイラが生成する可能性のあるファイル
+*.rlib
+*.so
+*.dll
+*.exe
+*.o
+*.a
+
+# Cargoが生成するファイル
+.rustc_info.json
+
+# その他の一般的な除外ファイル
+notes
+backups/
+tmp/
+temp/
