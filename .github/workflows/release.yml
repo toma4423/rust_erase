@@ -22,12 +22,18 @@ jobs:
       - name: Build
         run: cargo build --release --target x86_64-unknown-linux-gnu
       
+      - name: Prepare Release Asset
+        run: |
+          cd target/x86_64-unknown-linux-gnu/release/
+          chmod +x rust_erase
+          tar czf rust_erase_linux_x86_64.tar.gz rust_erase
+          
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            target/x86_64-unknown-linux-gnu/release/rust_erase
+            target/x86_64-unknown-linux-gnu/release/rust_erase_linux_x86_64.tar.gz
           draft: false
           prerelease: false
         env:

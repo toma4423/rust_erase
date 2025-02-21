@@ -42,7 +42,18 @@
 
 ### バイナリをダウンロード
 
-[Releases](https://github.com/toma4423/rust_erase/releases) ページから最新のバイナリをダウンロードできます。
+1. [Releases](https://github.com/[username]/rust_erase/releases) ページから最新の `rust_erase_linux_x86_64.tar.gz` をダウンロード
+
+2. ファイルを展開して実行権限を確認：
+```bash
+tar xzf rust_erase_linux_x86_64.tar.gz
+chmod +x rust_erase  # 念のため実行権限を付与
+```
+
+3. 管理者権限で実行：
+```bash
+sudo ./rust_erase
+```
 
 ## 使い方
 
