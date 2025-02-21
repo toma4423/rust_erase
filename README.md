@@ -2,6 +2,8 @@
 
 <!-- [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://example.com) -->
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Release](https://img.shields.io/github/v/release/toma4423/rust_erase)](https://github.com/toma4423/rust_erase/releases/latest)
+[![Test Status](https://github.com/toma4423/rust_erase/workflows/Test/badge.svg)](https://github.com/toma4423/rust_erase/actions)
 
 `rust_erase` は、Linux環境で動作するディスク消去ユーティリティです。DoD 5220.22-M方式 (HDD) および Secure Erase (SSD) を使用して、ディスクのデータを安全かつ完全に消去します。
 
@@ -37,6 +39,10 @@
     ```
 
     ビルドされた実行ファイルは `target/release/rust_erase` に生成されます。
+
+### バイナリをダウンロード
+
+[Releases](https://github.com/toma4423/rust_erase/releases) ページから最新のバイナリをダウンロードできます。
 
 ## 使い方
 
