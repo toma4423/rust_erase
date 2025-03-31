@@ -59,9 +59,9 @@ fn run_dd_with_progress(
                 #[cfg(debug_assertions)]
                 eprintln!("dd stderr: {}", line_content);
             }
-            Err(e) => {
+            Err(_e) => {
                 #[cfg(debug_assertions)]
-                eprintln!("Error reading dd stderr: {}", e);
+                eprintln!("Error reading dd stderr: {}", _e);
                 // エラーが発生しても続行するかもしれないが、一旦無視
             }
         }
