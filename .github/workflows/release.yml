@@ -2,39 +2,99 @@ name: Release
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - main
 
 permissions:
   contents: write
 
 jobs:
-  build-linux:
+  calculate-version:
+    runs-on: ubuntu-latest
+    outputs:
+      new_version: ${{ steps.version.outputs.new_version }}
+      is_new_version: ${{ steps.version.outputs.is_new_version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Calculate Next Version
+        id: version
+        run: |
+          git fetch --tags
+          latest_tag=$(git tag --sort=version:refname | grep '^0\.' | tail -n 1)
+
+          if [ -z "$latest_tag" ]; then
+            major=0
+            minor=0
+            patch=0
+          else
+            version_part=$(echo "$latest_tag" | sed 's/^v//')
+            major=$(echo "$version_part" | cut -d. -f1)
+            minor=$(echo "$version_part" | cut -d. -f2)
+            patch=$(echo "$version_part" | cut -d. -f3)
+          fi
+
+          new_patch=$((patch + 1))
+          new_version="0.${minor}.${new_patch}"
+
+          if git rev-parse "refs/tags/v${new_version}" >/dev/null 2>&1; then
+             echo "Tag v${new_version} already exists. No new release needed."
+             echo "is_new_version=false" >> $GITHUB_OUTPUT
+          else
+             echo "Calculated new version: v${new_version}"
+             echo "new_version=v${new_version}" >> $GITHUB_OUTPUT
+             echo "is_new_version=true" >> $GITHUB_OUTPUT
+          fi
+
+  build-and-release:
+    needs: calculate-version
+    if: needs.calculate-version.outputs.is_new_version == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: x86_64-unknown-linux-gnu
-      
+
+      - name: Run Tests
+        run: cargo test
+
       - name: Build
         run: cargo build --release --target x86_64-unknown-linux-gnu
-      
+
       - name: Prepare Release Asset
         run: |
+          version_tag_without_v=$(echo "${{ needs.calculate-version.outputs.new_version }}" | sed 's/^v//')
+          asset_name="rust_erase_linux_x86_64_${version_tag_without_v}.tar.gz"
           cd target/x86_64-unknown-linux-gnu/release/
           chmod +x rust_erase
-          tar czf rust_erase_linux_x86_64.tar.gz rust_erase
-          
+          tar czf "../../../${asset_name}" rust_erase
+          echo "ASSET_PATH=${asset_name}" >> $GITHUB_ENV
+
       - name: Create Release
         id: create_release
-        uses: softprops/action-gh-release@v1
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: |
-            target/x86_64-unknown-linux-gnu/release/rust_erase_linux_x86_64.tar.gz
+          tag_name: ${{ needs.calculate-version.outputs.new_version }}
+          release_name: Release ${{ needs.calculate-version.outputs.new_version }}
+          body: |
+            Automated release based on push to main branch.
+            Please update the release notes.
           draft: false
           prerelease: false
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ env.ASSET_PATH }}
+          asset_name: ${{ env.ASSET_PATH }}
+          asset_content_type: application/gzip 

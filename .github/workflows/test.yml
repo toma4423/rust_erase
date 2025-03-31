@@ -1,10 +1,10 @@
 name: Test
 
 on:
-  push:
-    branches: [ main ]
+  # push:
+  #   branches: [ main ] # release.yml でテストが実行されるため、ここでは無効化
   pull_request:
-    branches: [ main ]
+    branches: [ main ] # プルリクエスト時のみテストを実行
 
 jobs:
   test:
