@@ -2,8 +2,7 @@ name: Release
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 permissions:
   contents: write
@@ -12,41 +11,40 @@ jobs:
   calculate-version:
     runs-on: ubuntu-latest
     outputs:
-      new_version: ${{ steps.version.outputs.new_version }}
-      is_new_version: ${{ steps.version.outputs.is_new_version }}
+      new_version: ${{ steps.calculate_version.outputs.new_version }}
+      is_new_version: ${{ steps.calculate_version.outputs.is_new_version }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Calculate Next Version
-        id: version
+      - name: Calculate next version
+        id: calculate_version
         run: |
-          git fetch --tags
-          latest_tag=$(git tag --sort=version:refname | grep '^0\.' | tail -n 1)
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "Latest tag: $LATEST_TAG"
 
-          if [ -z "$latest_tag" ]; then
-            major=0
-            minor=0
-            patch=0
+          MAJOR=$(echo $LATEST_TAG | cut -d. -f1 | tr -d 'v')
+          MINOR=$(echo $LATEST_TAG | cut -d. -f2)
+          PATCH=$(echo $LATEST_TAG | cut -d. -f3)
+
+          NEW_PATCH=$((PATCH + 1))
+          NEW_VERSION="v$MAJOR.$MINOR.$NEW_PATCH"
+          echo "New version: $NEW_VERSION"
+
+          if [ "$LATEST_TAG" = "v0.0.0" ]; then
+            echo "is_new_version=true" >> $GITHUB_OUTPUT
           else
-            version_part=$(echo "$latest_tag" | sed 's/^v//')
-            major=$(echo "$version_part" | cut -d. -f1)
-            minor=$(echo "$version_part" | cut -d. -f2)
-            patch=$(echo "$version_part" | cut -d. -f3)
+            CHANGES=$(git diff --name-only $LATEST_TAG HEAD)
+            if [ -n "$CHANGES" ]; then
+              echo "Changes detected since last tag"
+              echo "is_new_version=true" >> $GITHUB_OUTPUT
+            else
+              echo "No changes detected since last tag"
+              echo "is_new_version=false" >> $GITHUB_OUTPUT
+            fi
           fi
-
-          new_patch=$((patch + 1))
-          new_version="0.${minor}.${new_patch}"
-
-          if git rev-parse "refs/tags/v${new_version}" >/dev/null 2>&1; then
-             echo "Tag v${new_version} already exists. No new release needed."
-             echo "is_new_version=false" >> $GITHUB_OUTPUT
-          else
-             echo "Calculated new version: v${new_version}"
-             echo "new_version=v${new_version}" >> $GITHUB_OUTPUT
-             echo "is_new_version=true" >> $GITHUB_OUTPUT
-          fi
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
 
   build-and-release:
     needs: calculate-version
@@ -67,13 +65,14 @@ jobs:
         run: cargo build --release --target x86_64-unknown-linux-gnu
 
       - name: Prepare Release Asset
+        id: prepare_asset
         run: |
           version_tag_without_v=$(echo "${{ needs.calculate-version.outputs.new_version }}" | sed 's/^v//')
           asset_name="rust_erase_linux_x86_64_${version_tag_without_v}.tar.gz"
           cd target/x86_64-unknown-linux-gnu/release/
           chmod +x rust_erase
           tar czf "../../../${asset_name}" rust_erase
-          echo "ASSET_PATH=${asset_name}" >> $GITHUB_ENV
+          echo "asset_path=${asset_name}" >> $GITHUB_OUTPUT
 
       - name: Create Release
         id: create_release
@@ -95,6 +94,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ env.ASSET_PATH }}
-          asset_name: ${{ env.ASSET_PATH }}
+          asset_path: ${{ steps.prepare_asset.outputs.asset_path }}
+          asset_name: ${{ steps.prepare_asset.outputs.asset_path }}
           asset_content_type: application/gzip 
