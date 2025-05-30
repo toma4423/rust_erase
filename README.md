@@ -108,3 +108,4 @@ sudo ./rust_erase
 *   UIの改善 (TUI/GUI)
 *   Windows/macOS対応
 *   ホタテが美味しい
+*   ホタテ高い
