@@ -107,3 +107,4 @@ sudo ./rust_erase
 *   消去方式の追加 (Gutmann方式など)
 *   UIの改善 (TUI/GUI)
 *   Windows/macOS対応
+*   ホタテが美味しい
