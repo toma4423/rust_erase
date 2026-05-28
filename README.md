@@ -28,7 +28,7 @@
 2.  **リポジトリのクローン:**
 
     ```bash
-    git clone https://github.com/<your_username>/rust_erase.git
+    git clone https://github.com/toma4423/rust_erase.git
     cd rust_erase
     ```
 
@@ -42,7 +42,7 @@
 
 ### バイナリをダウンロード
 
-1. [Releases](https://github.com/[username]/rust_erase/releases) ページから最新の `rust_erase_linux_x86_64.tar.gz` をダウンロード
+1. [Releases](https://github.com/toma4423/rust_erase/releases) ページから最新の `rust_erase_linux_x86_64.tar.gz` をダウンロード
 
 2. ファイルを展開して実行権限を確認：
 ```bash
@@ -107,5 +107,3 @@ sudo ./rust_erase
 *   消去方式の追加 (Gutmann方式など)
 *   UIの改善 (TUI/GUI)
 *   Windows/macOS対応
-*   ホタテが美味しい
-*   ホタテ高い
