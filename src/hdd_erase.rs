@@ -84,7 +84,8 @@ fn run_dd_with_progress(
         //     }
         // }
         let error_message = format!(
-            "dd command failed with status: {}. Check stderr logs above.", status // stderr_output を含めると冗長になる可能性
+            "dd command failed with status: {}. Check stderr logs above.",
+            status // stderr_output を含めると冗長になる可能性
         );
         bar.abandon_with_message("Pass failed"); // 失敗したら失敗メッセージ
         Err(error_message)
@@ -132,9 +133,11 @@ pub fn erase_hdd_with_dod5220(device: &str) -> Result<(), String> {
     log_message(
         "Device Size",
         "Success",
-        &format!("Determined size for {} is {} bytes.", device_name, device_size),
+        &format!(
+            "Determined size for {} is {} bytes.",
+            device_name, device_size
+        ),
     );
-
 
     // --- パス1-3: ランダムデータの書き込み ---
     for i in 0..3 {
@@ -162,12 +165,7 @@ pub fn erase_hdd_with_dod5220(device: &str) -> Result<(), String> {
             Err(e) => {
                 log_message(&action, "Failed", &e);
                 // DoD 5220.22-M では途中で失敗したら中断すべきか？要件によるが、ここでは中断する
-                return Err(format!(
-                    "Pass {} failed for {}: {}",
-                    i + 1,
-                    device_name,
-                    e
-                ));
+                return Err(format!("Pass {} failed for {}: {}", i + 1, device_name, e));
             }
         }
     }
@@ -189,15 +187,14 @@ pub fn erase_hdd_with_dod5220(device: &str) -> Result<(), String> {
     let dd_cmd = format!("dd if=/dev/zero of={} bs=4M oflag=direct", device_name); // directフラグ
 
     match run_dd_with_progress(&dd_cmd, device_size, &bar) {
-         Ok(_) => {
+        Ok(_) => {
             log_message(&action, "Success", "Zeros written successfully.");
         }
-         Err(e) => {
+        Err(e) => {
             log_message(&action, "Failed", &e);
             return Err(format!("Final pass failed for {}: {}", device_name, e));
         }
     }
-
 
     println!("\nDoD5220.22-M wipe completed for: {}", device_name);
     log_message(
@@ -231,7 +228,7 @@ mod tests {
 
         // 現状できることとして、関数がエラーを返さないことを確認する程度に留めます。
         // （実際にはデバイスサイズ取得やdd実行で失敗する可能性がある）
-         println!("Simulating success path (no actual dd run)...");
+        println!("Simulating success path (no actual dd run)...");
         // assert!(erase_hdd_with_dod5220(device).is_ok()); // これは実際のコマンドに依存するため失敗する
 
         // 代わりに、ロジックの主要部分を抜き出してテストするなどの工夫が必要
@@ -242,7 +239,7 @@ mod tests {
     fn test_erase_hdd_get_size_failure() {
         // デバイスサイズ取得失敗をシミュレートする方法が必要
         // 現状のコードでは直接モックできないため、テストは不完全
-         println!("Simulating get device size failure path...");
+        println!("Simulating get device size failure path...");
         // let result = erase_hdd_with_dod5220("/dev/fail_size");
         // assert!(result.is_err());
         // assert!(result.unwrap_err().contains("Failed to get device size"));
@@ -253,7 +250,7 @@ mod tests {
     fn test_erase_hdd_dd_failure() {
         // dd実行失敗をシミュレートする方法が必要
         // 現状のコードでは直接モックできないため、テストは不完全
-         println!("Simulating dd failure path...");
+        println!("Simulating dd failure path...");
         // let result = erase_hdd_with_dod5220("/dev/fail_dd");
         // assert!(result.is_err());
         // assert!(result.unwrap_err().contains("failed"));
@@ -263,7 +260,7 @@ mod tests {
     // run_dd_with_progress 関数のテスト (部分的なシミュレーション)
     #[test]
     fn test_run_dd_progress_parsing_mock() {
-         println!("Testing regex parsing for run_dd_with_progress (mocked)...");
+        println!("Testing regex parsing for run_dd_with_progress (mocked)...");
         let re = Regex::new(r"^(\d+)\s+bytes").unwrap();
 
         let line1 = "1024 bytes (1.0 kB, 1.0 KiB) copied, 0.001 s, 1.0 MB/s";
@@ -272,14 +269,13 @@ mod tests {
         assert_eq!(caps1.get(1).unwrap().as_str().parse::<u64>().unwrap(), 1024);
 
         let line2 = "1234567890 bytes (1.2 GB, 1.1 GiB) copied, 10.5 s, 117 MB/s";
-         let caps2 = re.captures(line2).unwrap();
+        let caps2 = re.captures(line2).unwrap();
         assert_eq!(caps2.get(1).unwrap().as_str(), "1234567890");
 
-         let line_no_match = "dd: writing to '/dev/null': No space left on device";
-         assert!(re.captures(line_no_match).is_none());
+        let line_no_match = "dd: writing to '/dev/null': No space left on device";
+        assert!(re.captures(line_no_match).is_none());
 
-         let line_records = "1+0 records in\n1+0 records out"; // これはバイト数ではない
-         assert!(re.captures(line_records).is_none());
+        let line_records = "1+0 records in\n1+0 records out"; // これはバイト数ではない
+        assert!(re.captures(line_records).is_none());
     }
-
 }
